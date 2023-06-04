@@ -23,6 +23,7 @@
 
 * 我们设计了消融实验来验证我们的多任务方案的有效性。证明了这三个任务不需要繁琐的交替优化就可以联合学习。
 
+* 我们设计了消融实验证明了基于网格的检测任务的预测机制与语义分割任务的预测机制更相关，相信这将为其他相关的多任务学习研究工作提供参考。  
   
 
 ### 实验结果
@@ -72,6 +73,17 @@
 | `Da-Seg(only)`  | -         | -     | 92.0    | -           | -      | 14.8            |
 | `Ll-Seg(only)`  | -         | -     | -       | 79.6        | 27.9   | 14.8            |
 | `Multitask`     | 89.2      | 76.5  | 91.5    | 70.5        | 26.2   | 24.4            |
+  
+#### 消融实验 3: 基于网格 v.s. 基于区域:
+
+| Training_method | Recall(%) | AP(%) | mIoU(%) | Accuracy(%) | IoU(%) | Speed(ms/frame) |
+| --------------- | --------- | ----- | ------- | ----------- | ------ | --------------- |
+| `R-CNNP Det(only)`     | 79.0      | 67.3  |  -      | -           | -      | -            |
+| `R-CNNP Seg(only)`     | -         | -     | 90.2    | 59.5        | 24.0   | -            |
+| `R-CNNP Multitask`     | 77.2(-1.8)| 62.6(-4.7)| 86.8(-3.4)| 49.8(-9.7)| 21.5(-2.5)| 103.3            | 
+| `YOLOP  Det(only)`     | 88.2      | 76.9  | -       | -           | -      | -            |
+| `YOLOP  Seg(only)`     | -         | -     | 91.6    | 69.9        | 26.5   | -            |
+| `YOLOP  Multitask`     | 89.2(+1.0)| 76.5(-0.4)| 91.5(-0.1)| 70.5(+0.6)| 26.2(-0.3)| 24.4            |   
 
 **Notes**: 
 
@@ -137,7 +149,8 @@
 │ │ ├─test.py    
 │ │ ├─train.py    
 ├─toolkits
-│ │ ├─depoly    # Deployment of model
+│ │ ├─deploy    # Deployment of model
+│ │ ├─datapre    # Generation of gt(mask) for drivable area segmentation task
 ├─weights    # Pretraining model
 ```
 
@@ -213,8 +226,10 @@ _C.TRAIN.DET_ONLY = False          # Only train detection task
 ```shell
 python tools/train.py
 ```
-
-
+多GPU训练:
+```
+python -m torch.distributed.launch --nproc_per_node=N tools/train.py  # N: the number of GPUs
+```
 
 ### 模型评测
 
@@ -237,7 +252,7 @@ python tools/test.py --weights weights/End-to-end.pth
 测试所使用的的图片存储在 `--source`下, 然后测试结果会保存在 `--save-dir`下：
 
 ```shell
-python tools/demo --source inference/images
+python tools/demo.py --source inference/images
 ```
 
 
@@ -247,7 +262,7 @@ python tools/demo --source inference/images
 如果你的计算机连接了摄像头, 你可以将 `source` 设为摄像头的序号(默认值为 0).
 
 ```shell
-python tools/demo --source 0
+python tools/demo.py --source 0
 ```
 
 
@@ -277,16 +292,28 @@ python tools/demo --source 0
 
 
 
+### 分割标签生成
+
+你可以通过运行以下命令生成可行驶区域的Mask标签
+
+```shell
+python toolkits/datasetpre/gen_bdd_seglabel.py
+```
+
+
+
 ## 引用
 
 如果你发现我们的代码和论文对你的研究有帮助， 可以考虑给我们 star :star:   和引用 :pencil: :
 
 ```BibTeX
-@misc{2108.11250,
-Author = {Dong Wu and Manwen Liao and Weitian Zhang and Xinggang Wang},
-Title = {YOLOP: You Only Look Once for Panoptic Driving Perception},
-Year = {2021},
-Eprint = {arXiv:2108.11250},
+@article{wu2022yolop,
+  title={Yolop: You only look once for panoptic driving perception},
+  author={Wu, Dong and Liao, Man-Wen and Zhang, Wei-Tian and Wang, Xing-Gang and Bai, Xiang and Cheng, Wen-Qing and Liu, Wen-Yu},
+  journal={Machine Intelligence Research},
+  pages={1--13},
+  year={2022},
+  publisher={Springer}
 }
 ```
 
