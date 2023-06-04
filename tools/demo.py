@@ -71,7 +71,6 @@ def detect(cfg,opt):
     names = model.module.names if hasattr(model, 'module') else model.names
     colors = [[random.randint(0, 255) for _ in range(3)] for _ in range(len(names))]
 
-
     # Run inference
     t0 = time.time()
 
@@ -106,6 +105,9 @@ def detect(cfg,opt):
         det=det_pred[0]
 
         save_path = str(opt.save_dir +'/'+ Path(path).name) if dataset.mode != 'stream' else str(opt.save_dir + '/' + "web.mp4")
+        da_save_path = str(opt.save_dir+'/da_'+Path(path).stem+'.txt')
+        ll_save_path = str(opt.save_dir+'/ll_'+Path(path).stem+'.txt')
+        bb_save_path = str(opt.save_dir+'/bb_'+Path(path).stem+'.txt')
 
         _, _, height, width = img.shape
         h,w,_=img_det.shape
@@ -120,7 +122,11 @@ def detect(cfg,opt):
         da_seg_mask = da_seg_mask.int().squeeze().cpu().numpy()
         # da_seg_mask = morphological_process(da_seg_mask, kernel_size=7)
 
-        
+        with open(da_save_path, 'w+') as file:
+            da_coords = list(zip(*np.where(da_seg_mask == 1)))
+            for da_coord in da_coords:
+                file.write(str(da_coord)+'\n')
+
         ll_predict = ll_seg_out[:, :,pad_h:(height-pad_h),pad_w:(width-pad_w)]
         ll_seg_mask = torch.nn.functional.interpolate(ll_predict, size=(h,w), mode='bilinear')
         _, ll_seg_mask = torch.max(ll_seg_mask, 1)
@@ -128,14 +134,26 @@ def detect(cfg,opt):
         ll_seg_mask = morphological_process(ll_seg_mask, kernel_size=7, func_type=cv2.MORPH_OPEN)
         ll_seg_mask = connect_lane(ll_seg_mask)
 
+        with open(ll_save_path, 'w+') as file:
+            ll_coords = list(zip(*np.where(ll_seg_mask == 1)))
+            for ll_coord in ll_coords:
+                file.write(str(ll_coord)+'\n')
+
         img_det = show_seg_result(img_det, (da_seg_mask, ll_seg_mask), _, _, is_demo=True)
+
+        file = open(bb_save_path, 'w+')
 
         if len(det):
             det[:,:4] = scale_coords(img.shape[2:],det[:,:4],img_det.shape).round()
             for *xyxy,conf,cls in reversed(det):
                 label_det_pred = f'{names[int(cls)]} {conf:.2f}'
                 plot_one_box(xyxy, img_det , label=label_det_pred, color=colors[int(cls)], line_thickness=2)
+                xyxy_values = [int(i.item()) for i in xyxy]
+                xyxy_values = [xyxy_values[1], xyxy_values[0], xyxy_values[3], xyxy_values[2]]
+                file.write(str(xyxy_values) + ' ' + label_det_pred + '\n')
         
+        file.close()
+
         if dataset.mode == 'images':
             cv2.imwrite(save_path,img_det)
 
