@@ -1,13 +1,13 @@
 <div align="left">   
 
 ## You Only :eyes: Once for Panoptic ​ :car: Perception
-> [**You Only Look at Once for Panoptic driving Perception**](https://arxiv.org/abs/2108.11250)
+> [**You Only Look at Once for Panoptic driving Perception**](https://link.springer.com/article/10.1007/s11633-022-1339-y)
 >
-> by Dong Wu, Manwen Liao, Weitian Zhang, [Xinggang Wang](https://xinggangw.info/)<sup> :email:</sup>     [*School of EIC, HUST*](http://eic.hust.edu.cn/English/Home.htm)
+> by Dong Wu, Manwen Liao, Weitian Zhang, [Xinggang Wang](https://xinggangw.info/)<sup> :email:</sup>, [Xiang Bai](https://scholar.google.com/citations?user=UeltiQ4AAAAJ&hl=zh-CN), [Wenqing Cheng](http://eic.hust.edu.cn/professor/chengwenqing/), [Wenyu Liu](http://eic.hust.edu.cn/professor/liuwenyu/)      [*School of EIC, HUST*](http://eic.hust.edu.cn/English/Home.htm)
 >
 >  (<sup>:email:</sup>) corresponding author.
 >
-> *arXiv technical report ([arXiv 2108.11250](https://arxiv.org/abs/2108.11250))*
+> *arXiv technical report ([Machine Intelligence Research2022](https://link.springer.com/article/10.1007/s11633-022-1339-y))*
 
 ---
 
@@ -22,11 +22,11 @@
 * We put forward an efficient multi-task network that can jointly handle three crucial tasks in autonomous driving: object detection, drivable area segmentation and lane detection to save computational costs, reduce inference time as well as improve the performance of each task. Our work is the first to reach real-time on embedded devices while maintaining state-of-the-art level performance on the `BDD100K `dataset.
 
 * We design the ablative experiments to verify the effectiveness of our multi-tasking scheme. It is proved that the three tasks can be learned jointly without tedious alternating optimization.
-
   
+* We design the ablative experiments to prove that the grid-based prediction mechanism of detection task is more related to that of semantic segmentation task, which is believed to provide reference for other relevant multi-task learning research works.
 
 ### Results
-	
+
 [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/yolop-you-only-look-once-for-panoptic-driving/traffic-object-detection-on-bdd100k)](https://paperswithcode.com/sota/traffic-object-detection-on-bdd100k?p=yolop-you-only-look-once-for-panoptic-driving)
 #### Traffic Object Detection Result
 
@@ -34,7 +34,7 @@
 | -------------- | --------- | -------- | ---------- |
 | `Multinet`     | 81.3      | 60.2     | 8.6        |
 | `DLT-Net`      | 89.4      | 68.4     | 9.3        |
-| `Faster R-CNN` | 77.2      | 55.6     | 5.3        |
+| `Faster R-CNN` | 81.2      | 64.9     | 8.8        |
 | `YOLOv5s`      | 86.8      | 77.2     | 82         |
 | `YOLOP(ours)`  | 89.2      | 76.5     | 41         |
 #### Drivable Area Segmentation Result
@@ -74,6 +74,18 @@
 | `Ll-Seg(only)`  | -         | -     | -       | 79.6        | 27.9   | 14.8            |
 | `Multitask`     | 89.2      | 76.5  | 91.5    | 70.5        | 26.2   | 24.4            |
 
+#### Ablation Studies 3: Grid-based v.s. Region-based:
+
+| Training_method | Recall(%) | AP(%) | mIoU(%) | Accuracy(%) | IoU(%) | Speed(ms/frame) |
+| --------------- | --------- | ----- | ------- | ----------- | ------ | --------------- |
+| `R-CNNP Det(only)`     | 79.0      | 67.3  |  -      | -           | -      | -            |
+| `R-CNNP Seg(only)`     | -         | -     | 90.2    | 59.5        | 24.0   | -            |
+| `R-CNNP Multitask`     | 77.2(-1.8)| 62.6(-4.7)| 86.8(-3.4)| 49.8(-9.7)| 21.5(-2.5)| 103.3            | 
+| `YOLOP  Det(only)`     | 88.2      | 76.9  | -       | -           | -      | -            |
+| `YOLOP  Seg(only)`     | -         | -     | 91.6    | 69.9        | 26.5   | -            |
+| `YOLOP  Multitask`     | 89.2(+1.0)| 76.5(-0.4)| 91.5(-0.1)| 70.5(+0.6)| 26.2(-0.3)| 24.4            |   
+
+  
 **Notes**: 
 
 - The works we has use for reference including `Multinet`  ([paper](https://arxiv.org/pdf/1612.07695.pdf?utm_campaign=affiliate-ir-Optimise%20media%28%20South%20East%20Asia%29%20Pte.%20ltd._156_-99_national_R_all_ACQ_cpa_en&utm_content=&utm_source=%20388939),[code](https://github.com/MarvinTeichmann/MultiNet)）,`DLT-Net`   ([paper](https://ieeexplore.ieee.org/abstract/document/8937825)）,`Faster R-CNN`  ([paper](https://proceedings.neurips.cc/paper/2015/file/14bfa6bb14875e45bba028a21ed38046-Paper.pdf),[code](https://github.com/ShaoqingRen/faster_rcnn)）,`YOLOv5s`（[code](https://github.com/ultralytics/yolov5))  ,`PSPNet`([paper](https://openaccess.thecvf.com/content_cvpr_2017/papers/Zhao_Pyramid_Scene_Parsing_CVPR_2017_paper.pdf),[code](https://github.com/hszhao/PSPNet)) ,`ENet`([paper](https://arxiv.org/pdf/1606.02147.pdf),[code](https://github.com/osmr/imgclsmob))    `SCNN`([paper](https://www.aaai.org/ocs/index.php/AAAI/AAAI18/paper/download/16802/16322),[code](https://github.com/XingangPan/SCNN))    `SAD-ENet`([paper](https://openaccess.thecvf.com/content_ICCV_2019/papers/Hou_Learning_Lightweight_Lane_Detection_CNNs_by_Self_Attention_Distillation_ICCV_2019_paper.pdf),[code](https://github.com/cardwing/Codes-for-Lane-Detection)). Thanks for their wonderful works.
@@ -138,7 +150,8 @@
 │ │ ├─test.py    
 │ │ ├─train.py    
 ├─toolkits
-│ │ ├─depoly    # Deployment of model
+│ │ ├─deploy    # Deployment of model
+│ │ ├─datapre    # Generation of gt(mask) for drivable area segmentation task
 ├─weights    # Pretraining model
 ```
 
@@ -213,7 +226,10 @@ Start training:
 ```shell
 python tools/train.py
 ```
-
+Multi GPU mode:
+```shell
+python -m torch.distributed.launch --nproc_per_node=N tools/train.py  # N: the number of GPUs
+```
 
 
 ### Evaluation
@@ -237,7 +253,7 @@ We provide two testing method.
 You can store the image or video in `--source`, and then save the reasoning result to `--save-dir`
 
 ```shell
-python tools/demo --source inference/images
+python tools/demo.py --source inference/images
 ```
 
 
@@ -247,7 +263,7 @@ python tools/demo --source inference/images
 If there are any camera connected to your computer, you can set the `source` as the camera number(The default is 0).
 
 ```shell
-python tools/demo --source 0
+python tools/demo.py --source 0
 ```
 
 
@@ -275,6 +291,18 @@ python tools/demo --source 0
 
 Our model can reason in real-time on `Jetson Tx2`, with `Zed Camera` to capture image. We use `TensorRT` tool for speeding up. We provide code for deployment and reasoning of model in  `./toolkits/deploy`.
 
+
+
+### Segmentation Label(Mask) Generation
+
+You can generate the label for drivable area segmentation task by running
+
+```shell
+python toolkits/datasetpre/gen_bdd_seglabel.py
+```
+
+
+
 #### Model Transfer
 
 Before reasoning with TensorRT C++ API, you need to transfer the `.pth` file into binary file which can be read by C++.
@@ -285,25 +313,35 @@ python toolkits/deploy/gen_wts.py
 
 After running the above command, you obtain a binary file named `yolop.wts`.
 
+
+
 #### Running Inference
 
 TensorRT needs an engine file for inference. Building an engine is time-consuming. It is convenient to save an engine file so that you can reuse it every time you run the inference. The process is integrated in `main.cpp`. It can determine whether to build an engine according to the existence of your engine file.
 
+
+
 ### Third Parties Resource  
 * YOLOP OpenCV-DNN C++ Demo: [YOLOP-opencv-dnn](https://github.com/hpc203/YOLOP-opencv-dnn) from [hpc203](https://github.com/hpc203)  
-* YOLOP ONNXRuntime C++ Demo: [lite.ai](https://github.com/DefTruth/lite.ai/blob/main/ort/cv/yolop.cpp) from [DefTruth](https://github.com/DefTruth)  
+* YOLOP ONNXRuntime C++ Demo: [lite.ai.toolkit](https://github.com/DefTruth/lite.ai.toolkit/blob/main/lite/ort/cv/yolop.cpp) from [DefTruth](https://github.com/DefTruth)  
 * YOLOP NCNN C++ Demo: [YOLOP-NCNN](https://github.com/EdVince/YOLOP-NCNN) from [EdVince](https://github.com/EdVince)  
+* YOLOP MNN C++ Demo: [YOLOP-MNN](https://github.com/DefTruth/lite.ai.toolkit/blob/main/lite/mnn/cv/mnn_yolop.cpp) from [DefTruth](https://github.com/DefTruth) 
+* YOLOP TNN C++ Demo: [YOLOP-TNN](https://github.com/DefTruth/lite.ai.toolkit/blob/main/lite/tnn/cv/tnn_yolop.cpp) from [DefTruth](https://github.com/DefTruth) 	
+
+
 
 ## Citation
 
 If you find our paper and code useful for your research, please consider giving a star :star:   and citation :pencil: :
 
 ```BibTeX
-@misc{2108.11250,
-Author = {Dong Wu and Manwen Liao and Weitian Zhang and Xinggang Wang},
-Title = {YOLOP: You Only Look Once for Panoptic Driving Perception},
-Year = {2021},
-Eprint = {arXiv:2108.11250},
+@article{wu2022yolop,
+  title={Yolop: You only look once for panoptic driving perception},
+  author={Wu, Dong and Liao, Man-Wen and Zhang, Wei-Tian and Wang, Xing-Gang and Bai, Xiang and Cheng, Wen-Qing and Liu, Wen-Yu},
+  journal={Machine Intelligence Research},
+  pages={1--13},
+  year={2022},
+  publisher={Springer}
 }
 ```
 

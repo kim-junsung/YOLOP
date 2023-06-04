@@ -99,7 +99,7 @@ def detect(cfg,opt):
 
         # Apply NMS
         t3 = time_synchronized()
-        det_pred = non_max_suppression(inf_out, conf_thres=0.25, iou_thres=0.45, classes=None, agnostic=False)
+        det_pred = non_max_suppression(inf_out, conf_thres=opt.conf_thres, iou_thres=opt.iou_thres, classes=None, agnostic=False)
         t4 = time_synchronized()
 
         nms_time.update(t4-t3,img.size(0))
@@ -125,8 +125,9 @@ def detect(cfg,opt):
         ll_seg_mask = torch.nn.functional.interpolate(ll_predict, size=(h,w), mode='bilinear')
         _, ll_seg_mask = torch.max(ll_seg_mask, 1)
         ll_seg_mask = ll_seg_mask.int().squeeze().cpu().numpy()
-        ll_seg_mask = morphological_process(ll_seg_mask, kernel_size=7, func_type=cv2.MORPH_OPEN)
-        ll_seg_mask = connect_lane(ll_seg_mask)
+        # Lane line post-processing
+        #ll_seg_mask = morphological_process(ll_seg_mask, kernel_size=7, func_type=cv2.MORPH_OPEN)
+        #ll_seg_mask = connect_lane(ll_seg_mask)
 
         img_det = show_seg_result(img_det, (da_seg_mask, ll_seg_mask), _, _, is_demo=True)
 
